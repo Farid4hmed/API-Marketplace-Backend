@@ -3,7 +3,7 @@ const route = Router();
 const express = require("express");
 const app = express();
 const userModel = require("../models/user");
-
+const apiListModel = require("../models/apiList");
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
@@ -29,7 +29,7 @@ route.post("/login", async (req, res, next) => {
         }
 
         const token = await generateAuthToken(payload);
-        return token;
+        res.send(token);
     }
     catch(err){
         console.log(err);
@@ -54,5 +54,20 @@ async function verifyAuthToken(token, callback, next) {
         return {};
     }
 }
+
+
+//marketplace dashboard API
+route.get("/list-all-apis", (req, res, next) => {
+    try{
+        apiListModel.find({}, (err, data) => {
+            if(err)console.log(err);
+            else { res.status(200).send(data) };
+        });
+    }
+    catch(err){
+        console.log(err);
+        next(err);
+    }
+});
 
 module.exports = route;
